@@ -6,4 +6,4 @@ class EcommerceConfig(AppConfig):
     name = 'ecommerce'
 
     def ready(self):
-        pass
+        import ecommerce.signals

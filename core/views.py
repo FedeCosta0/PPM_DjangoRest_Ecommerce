@@ -10,7 +10,7 @@ from .serializers import ContactSerializer
 
 class ContactAPIView(views.APIView):
     """
-    A simple APIView for creating contact entries.
+    An APIView for creating contact entries.
     """
     serializer_class = ContactSerializer
 

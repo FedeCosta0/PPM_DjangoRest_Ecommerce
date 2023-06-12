@@ -13,9 +13,9 @@ class ContactTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.data = {
-            "name": "Billy Smith",
+            "name": "Test Name",
             "message": "This is a test message",
-            "email": "billysmith@test.com"
+            "email": "TestMail@mail.com"
         }
         self.url = "/contact/"
 
@@ -27,7 +27,7 @@ class ContactTestCase(APITestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Contact.objects.count(), 1)
-        self.assertEqual(Contact.objects.get().title, "Billy Smith")
+        self.assertEqual(Contact.objects.get().title, "Test Name")
 
     def test_create_contact_without_name(self):
         """

@@ -79,7 +79,6 @@ DATABASES = {
     }
 }
 
-
 if 'test' in sys.argv or 'test_coverage' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 
@@ -147,3 +146,5 @@ REST_FRAMEWORK = {
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
 }
+
+CSRF_TRUSTED_ORIGINS = ['https://*.web-production-db80.up.railway.app']

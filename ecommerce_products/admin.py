@@ -5,9 +5,6 @@ from . import models
 
 @admin.register(models.Product)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title')
+    list_display = ('id', 'name', 'price')
 
 
-@admin.register(models.Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'item')

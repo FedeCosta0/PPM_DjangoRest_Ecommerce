@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from ecommerce_users.models import CustomUser
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
@@ -20,13 +20,12 @@ class EcommerceTestCase(APITestCase):
         Product.objects.create(title="Demo item 4", description="This is a description for demo 4", price=400, stock=14)
         Product.objects.create(title="Demo item 5", description="This is a description for demo 5", price=500, stock=30)
         self.items = Product.objects.all()
-        self.user = User.objects.create_user(
-            username='testuser1',
+        self.user = CustomUser.objects.create_user(
+            email='testuser1@test.com',
             password='this_is_a_test',
-            email='testuser1@test.com'
         )
-        Order.objects.create(item=Product.objects.first(), user=User.objects.first(), quantity=1)
-        Order.objects.create(item=Product.objects.first(), user=User.objects.first(), quantity=2)
+        Order.objects.create(item=Product.objects.first(), user=CustomUser.objects.first(), quantity=1)
+        Order.objects.create(item=Product.objects.first(), user=CustomUser.objects.first(), quantity=2)
 
         # The app uses token authentication
         self.token = Token.objects.get(user=self.user)

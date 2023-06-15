@@ -78,21 +78,3 @@ class Product(Model, TimeStampedModel):
     '''
 
 
-class Order(TimeStampedModel, Model):
-    """
-    ecommerce_products.Order
-    Stores a single order entry, related to :model:`ecommerce_products.Product` and
-    :model:`auth.User`.
-    """
-
-    class Meta:
-        verbose_name = 'Order'
-        verbose_name_plural = 'Orders'
-        ordering = ["id"]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    item = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f'{self.user.username} - {self.item.title}'

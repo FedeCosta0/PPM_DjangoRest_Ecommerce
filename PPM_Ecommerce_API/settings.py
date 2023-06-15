@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # Used to enable token authentication
     'core',
     'ecommerce_products',
+    'ecommerce_users',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +75,8 @@ DATABASES = {
         'NAME': 'railway',
         'USER': 'postgres',
         'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
-        'HOST': 'containers-us-west-108.railway.app',
-        'PORT': '5821',
+        'HOST': os.environ.get("DATABASE_HOST"),
+        'PORT': os.environ.get("DATABASE_PORT"),
     }
 }
 
@@ -147,4 +148,10 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
 }
 
+REST_REGISTRATION = {
+
+}
+
 CSRF_TRUSTED_ORIGINS = ['https://*.web-production-db80.up.railway.app']
+
+AUTH_USER_MODEL = "ecommerce_users.CustomUser"

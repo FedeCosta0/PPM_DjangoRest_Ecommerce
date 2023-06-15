@@ -7,40 +7,40 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Product, Order
-from .serializers import ProductSerializer, OrderSerializer
+from .models import Product
+from .serializers import ProductSerializer
 
 
-class ItemViewSet(
+class ProductViewSet(
     ListModelMixin,
     RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
     """
-    ViewSet for listing or retrieving items.
+    ViewSet for listing or retrieving products.
     """
     permission_classes = (IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-
+"""
 class OrderViewSet(
     ListModelMixin,
     RetrieveModelMixin,
     UpdateModelMixin,
     viewsets.GenericViewSet
 ):
-    """
+
     ViewSet for listing, retrieving and creating orders.
-    """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        """
+
         This view should return a list of all the orders
         for the currently authenticated user.
-        """
+
         user = self.request.user
         return Order.objects.filter(user=user)
 
@@ -56,3 +56,5 @@ class OrderViewSet(
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
+            
+"""

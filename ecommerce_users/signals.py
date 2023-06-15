@@ -1,5 +1,4 @@
-from django.conf import settings
-from django.contrib.auth.models import User
+from PPM_Ecommerce_API import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token

@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework_json_api import serializers
 
-from .models import Product, Order, ProductCategory, ProductInventory, Discount
+from .models import Product, ProductCategory, ProductInventory, Discount
 
 
 class NotEnoughStockException(APIException):
@@ -66,6 +66,7 @@ class DiscountSerializer(serializers.ModelSerializer):
         ]
 
 
+"""
 class OrderSerializer(serializers.ModelSerializer):
     item = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=False)
 
@@ -77,11 +78,11 @@ class OrderSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, res: OrderedDict):
-        """
-        Used to validate Product stock levels
-        """
+        
         item = res.get("item")
         quantity = res.get("quantity")
         if not item.check_stock(quantity):
             raise NotEnoughStockException
         return res
+
+"""

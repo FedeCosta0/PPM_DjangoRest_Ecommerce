@@ -23,11 +23,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'category',
         ]
 
-    def create(self, validated_data):
-        product_inventory = validated_data.pop('initial_quantity')
-        product_inventory_instance = ProductInventory.objects.create(quantity=product_inventory)
-        product_instance = Product.objects.create(**validated_data, inventory=product_inventory_instance)
-        return product_instance
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):

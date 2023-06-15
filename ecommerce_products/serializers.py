@@ -21,8 +21,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'price',
             'category',
-            'initial_quantity',
-            'discount',
         ]
 
     def create(self, validated_data):

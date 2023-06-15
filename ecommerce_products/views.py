@@ -7,8 +7,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Item, Order
-from .serializers import ItemSerializer, OrderSerializer
+from .models import Product, Order
+from .serializers import ProductSerializer, OrderSerializer
 
 
 class ItemViewSet(
@@ -20,8 +20,8 @@ class ItemViewSet(
     ViewSet for listing or retrieving items.
     """
     permission_classes = (IsAuthenticated,)
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 
 class OrderViewSet(
@@ -49,7 +49,7 @@ class OrderViewSet(
             data = JSONParser().parse(request)
             serializer = OrderSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
-                item = Item.objects.get(pk=data["item"])
+                item = Product.objects.get(pk=data["item"])
                 order = item.place_order(request.user, data["quantity"])
                 return Response(OrderSerializer(order).data)
             else:

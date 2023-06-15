@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
-from ecommerce.models import Item, Order
+from ecommerce_products.models import Product, Order
 
 
 class EcommerceTestCase(APITestCase):
@@ -14,19 +14,19 @@ class EcommerceTestCase(APITestCase):
 
     def setUp(self):
 
-        Item.objects.create(title="Demo item 1", description="This is a description for demo 1", price=500, stock=20)
-        Item.objects.create(title="Demo item 2", description="This is a description for demo 2", price=700, stock=15)
-        Item.objects.create(title="Demo item 3", description="This is a description for demo 3", price=300, stock=18)
-        Item.objects.create(title="Demo item 4", description="This is a description for demo 4", price=400, stock=14)
-        Item.objects.create(title="Demo item 5", description="This is a description for demo 5", price=500, stock=30)
-        self.items = Item.objects.all()
+        Product.objects.create(title="Demo item 1", description="This is a description for demo 1", price=500, stock=20)
+        Product.objects.create(title="Demo item 2", description="This is a description for demo 2", price=700, stock=15)
+        Product.objects.create(title="Demo item 3", description="This is a description for demo 3", price=300, stock=18)
+        Product.objects.create(title="Demo item 4", description="This is a description for demo 4", price=400, stock=14)
+        Product.objects.create(title="Demo item 5", description="This is a description for demo 5", price=500, stock=30)
+        self.items = Product.objects.all()
         self.user = User.objects.create_user(
             username='testuser1',
             password='this_is_a_test',
             email='testuser1@test.com'
         )
-        Order.objects.create(item=Item.objects.first(), user=User.objects.first(), quantity=1)
-        Order.objects.create(item=Item.objects.first(), user=User.objects.first(), quantity=2)
+        Order.objects.create(item=Product.objects.first(), user=User.objects.first(), quantity=1)
+        Order.objects.create(item=Product.objects.first(), user=User.objects.first(), quantity=2)
 
         # The app uses token authentication
         self.token = Token.objects.get(user=self.user)
@@ -53,7 +53,7 @@ class EcommerceTestCase(APITestCase):
 
     def test_order_is_more_than_stock(self):
         """
-        test Item.check_stock when order.quantity > item.stock
+        test Product.check_stock when order.quantity > item.stock
         """
         for i in self.items:
             current_stock = i.stock
@@ -61,7 +61,7 @@ class EcommerceTestCase(APITestCase):
 
     def test_order_equals_stock(self):
         """
-        test Item.check_stock when order.quantity == item.stock
+        test Product.check_stock when order.quantity == item.stock
         """
         for i in self.items:
             current_stock = i.stock
@@ -69,7 +69,7 @@ class EcommerceTestCase(APITestCase):
 
     def test_order_is_less_than_stock(self):
         """
-        test Item.check_stock when order.quantity < item.stock
+        test Product.check_stock when order.quantity < item.stock
         """
         for i in self.items:
             current_stock = i.stock

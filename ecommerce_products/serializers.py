@@ -23,10 +23,13 @@ class ProductSerializer(serializers.ModelSerializer):
             'category',
         ]
 
-
+    def create(self, validated_data):
+        inventory_instance = ProductInventory.objects.create()
+        discount_instance, created = Discount.objects.get_or_create(name="NullDiscount")
+        product_instance = Product.objects.create(**validated_data, inventory=inventory_instance, discount=discount_instance)
+        return product_instance
 
 class ProductCategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ProductCategory
         fields = [
@@ -36,7 +39,6 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
 
 class ProductInventorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ProductInventory
         fields = [
@@ -45,7 +47,6 @@ class ProductInventorySerializer(serializers.ModelSerializer):
 
 
 class DiscountSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Discount
         fields = [

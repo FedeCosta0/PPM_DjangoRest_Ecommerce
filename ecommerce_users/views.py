@@ -3,7 +3,7 @@ from .serializers import UserSerializer, UserRegistrationSerializer
 from ecommerce_users.models import CustomUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
-from permissions import UserPermission
+from .permissions import UserPermission
 
 
 class UserViewSet(viewsets.ModelViewSet):

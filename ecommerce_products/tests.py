@@ -4,10 +4,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
-from ecommerce_products.models import Product, Order
+from ecommerce_products.models import Product
 
 
-class EcommerceTestCase(APITestCase):
+class EcommerceProductsTestCase(APITestCase):
     """
     Test suite for Items and Orders
     """

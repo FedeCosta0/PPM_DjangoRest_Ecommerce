@@ -5,7 +5,7 @@ from utils.model_abstracts import Model
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, password, first_name, last_name):
         """
         Creates and saves a User with the given email and password.
         """
@@ -14,6 +14,8 @@ class MyUserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name
         )
 
         user.set_password(password)
@@ -27,6 +29,8 @@ class MyUserManager(BaseUserManager):
         user = self.create_user(
             email,
             password=password,
+            first_name="",
+            last_name=""
         )
         user.is_admin = True
         user.save(using=self._db)

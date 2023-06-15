@@ -1,4 +1,3 @@
-
 from .serializers import UserSerializer, UserRegistrationSerializer
 from ecommerce_users.models import CustomUser
 from rest_framework.authentication import TokenAuthentication
@@ -8,9 +7,10 @@ from .permissions import UserPermission
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (UserPermission,)
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (UserPermission,)
+    serializer_class = UserSerializer
+
     serializer_action_classes = {
         'list': UserSerializer,
         'retrieve': UserSerializer,
@@ -22,5 +22,3 @@ class UserViewSet(viewsets.ModelViewSet):
             return self.serializer_action_classes[self.action]
         except (KeyError, AttributeError):
             return super().get_serializer_class()
-
-

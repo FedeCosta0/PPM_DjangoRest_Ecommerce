@@ -4,7 +4,7 @@ from . import models
 
 
 @admin.register(models.Product)
-class ItemAdmin(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'price')
 
 

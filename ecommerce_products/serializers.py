@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from rest_framework import status
 from rest_framework.exceptions import APIException
-from rest_framework_json_api import serializers
+from rest_framework import serializers
 
 from .models import Product, ProductCategory, ProductInventory, Discount
 
@@ -17,27 +17,27 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id',
             'name',
             'description',
             'price',
-            'category_id',
-            'inventory_id',
-            'discount_id',
-            'created',
-            'modified',
+            'category',
+            'inventory',
+            'discount',
         ]
+
+    def create(self, validated_data):
+        product_inventory = validated_data.pop('inventory')
+        product_inventory_instance = ProductInventory.objects.create(quantity=product_inventory)
+        product_instance = Product.objects.create(**validated_data, inventory=product_inventory_instance)
+        return product_instance
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
         fields = [
-            'id',
             'name',
             'description',
-            'created',
-            'modified',
         ]
 
 
@@ -45,10 +45,7 @@ class ProductInventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductInventory
         fields = [
-            'id',
             'quantity',
-            'created',
-            'modified',
         ]
 
 
@@ -56,13 +53,10 @@ class DiscountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discount
         fields = [
-            'id',
             'name',
             'description',
             'discount_percent',
             'active',
-            'created',
-            'modified',
         ]
 
 

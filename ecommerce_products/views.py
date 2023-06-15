@@ -1,27 +1,38 @@
-from json import JSONDecodeError
+from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
-from django.http import JsonResponse
-from rest_framework import viewsets, status
-from rest_framework.mixins import ListModelMixin, UpdateModelMixin, RetrieveModelMixin
-from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
-from .models import Product
-from .serializers import ProductSerializer
+from .permissions import ProductPermission
+from .models import Product, ProductCategory, ProductInventory, Discount
+from .serializers import ProductSerializer, ProductCategorySerializer, ProductInventorySerializer, DiscountSerializer
 
 
-class ProductViewSet(
-    ListModelMixin,
-    RetrieveModelMixin,
-    viewsets.GenericViewSet
-):
-    """
-    ViewSet for listing or retrieving products.
-    """
-    permission_classes = (IsAuthenticated,)
+class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (ProductPermission,)
     serializer_class = ProductSerializer
+
+
+class ProductCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ProductCategory.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (ProductPermission,)
+    serializer_class = ProductCategorySerializer
+
+
+class ProductInventoryViewSet(viewsets.ModelViewSet):
+    queryset = ProductInventory.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (ProductPermission,)
+    serializer_class = ProductInventorySerializer
+
+
+class DiscountViewSet(viewsets.ModelViewSet):
+    queryset = Discount.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (ProductPermission,)
+    serializer_class = DiscountSerializer
+
 
 """
 class OrderViewSet(

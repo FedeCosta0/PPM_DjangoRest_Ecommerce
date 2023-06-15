@@ -32,25 +32,30 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     products = serializers.PrimaryKeyRelatedField(many=True, read_only=False, queryset=Product.objects.all())
+
     class Meta:
         model = ProductCategory
         fields = [
             'name',
             'description',
+            'products',
         ]
 
 
 class ProductInventorySerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(many=True, read_only=False, queryset=Product.objects.all())
+
     class Meta:
         model = ProductInventory
         fields = [
             'quantity',
+            'product',
         ]
 
 
 class DiscountSerializer(serializers.ModelSerializer):
     products = serializers.PrimaryKeyRelatedField(many=True, read_only=False, queryset=Product.objects.all())
+
     class Meta:
         model = Discount
         fields = [
@@ -58,6 +63,7 @@ class DiscountSerializer(serializers.ModelSerializer):
             'description',
             'discount_percent',
             'active',
+            'products',
         ]
 
 

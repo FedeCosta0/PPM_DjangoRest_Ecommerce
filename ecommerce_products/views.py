@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication
 
 from .permissions import ProductPermission
 from .models import Product, ProductCategory, ProductInventory, Discount
-from .serializers import ProductSerializer, ProductCategorySerializer, ProductInventorySerializer, DiscountSerializer
+from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, ProductInventorySerializer, DiscountSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -11,6 +11,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductPermission,)
     serializer_class = ProductSerializer
+
+    serializer_action_classes = {
+        'list': ProductSerializer,
+        'retrieve': ProductSerializer,
+        'create': ProductCreationSerializer,
+    }
 
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):

@@ -13,7 +13,7 @@ class NotEnoughStockException(APIException):
     default_code = 'invalid'
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
@@ -26,8 +26,25 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         inventory_instance = ProductInventory.objects.create()
         discount_instance, created = Discount.objects.get_or_create(name="NullDiscount")
-        product_instance = Product.objects.create(**validated_data, inventory=inventory_instance, discount=discount_instance)
+        product_instance = Product.objects.create(**validated_data, inventory=inventory_instance,
+                                                  discount=discount_instance)
         return product_instance
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'name',
+            'description',
+            'price',
+            'category',
+            'inventory',
+            'discount',
+        ]
+
+
+
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:

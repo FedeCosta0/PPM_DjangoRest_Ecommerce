@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework import serializers
@@ -44,8 +42,6 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
 
-
-
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
@@ -59,7 +55,7 @@ class ProductInventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductInventory
         fields = [
-            'quantity',
+            'stock',
         ]
 
 

@@ -1,9 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
+from rest_framework.permissions import IsAuthenticated
 
-from .permissions import ProductPermission
+from ecommerce_cart.models import ShoppingSession
+from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission
 from .models import Product, ProductCategory, ProductInventory, Discount
-from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, ProductInventorySerializer, DiscountSerializer
+from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, \
+    ProductInventorySerializer, DiscountSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -22,22 +26,25 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (ProductPermission,)
+    permission_classes = (ProductCategoryPermission,)
     serializer_class = ProductCategorySerializer
 
 
 class ProductInventoryViewSet(viewsets.ModelViewSet):
     queryset = ProductInventory.objects.all()
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (ProductPermission,)
+    permission_classes = (ProductInventoryPermission,)
     serializer_class = ProductInventorySerializer
 
 
 class DiscountViewSet(viewsets.ModelViewSet):
     queryset = Discount.objects.all()
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (ProductPermission,)
+    permission_classes = (DiscountPermission,)
     serializer_class = DiscountSerializer
+
+
+
 
 
 """

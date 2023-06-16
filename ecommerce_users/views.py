@@ -1,8 +1,9 @@
-from .serializers import UserSerializer, UserRegistrationSerializer
-from ecommerce_users.models import CustomUser
-from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+
+from ecommerce_users.models import CustomUser
 from .permissions import UserPermission
+from .serializers import UserSerializer, UserRegistrationSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

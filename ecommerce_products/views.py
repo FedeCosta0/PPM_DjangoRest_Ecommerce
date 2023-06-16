@@ -1,9 +1,10 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 
-from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission
 from .models import Product, ProductCategory, ProductInventory, Discount
-from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, ProductInventorySerializer, DiscountSerializer
+from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission
+from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, \
+    ProductInventorySerializer, DiscountSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -38,9 +39,6 @@ class DiscountViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (DiscountPermission,)
     serializer_class = DiscountSerializer
-
-
-
 
 
 """

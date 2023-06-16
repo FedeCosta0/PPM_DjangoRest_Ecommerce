@@ -20,4 +20,4 @@ class ProductInventoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.Discount)
 class DiscountAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'discount', 'active')
+    list_display = ('id', 'name', 'description', 'discount_percent', 'active')

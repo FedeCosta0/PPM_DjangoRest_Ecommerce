@@ -1,9 +1,8 @@
-from rest_framework import serializers
-from ecommerce_users.models import CustomUser
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
+from ecommerce_users.models import CustomUser
 
 
 # Serializer to Get User Details using Django Token Authentication

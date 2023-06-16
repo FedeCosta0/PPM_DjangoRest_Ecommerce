@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django_extensions.db.models import (
     TimeStampedModel
@@ -53,9 +52,12 @@ class Product(Model, TimeStampedModel):
     name = models.CharField(max_length=50, null=False)
     description = models.TextField(null=False)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
-    category = models.ForeignKey(to=ProductCategory, on_delete=models.DO_NOTHING, related_name='products', verbose_name='category_id')
-    inventory = models.OneToOneField(to=ProductInventory, on_delete=models.DO_NOTHING, related_name='product', verbose_name='inventory_id')
-    discount = models.ForeignKey(to=Discount, on_delete=models.DO_NOTHING, related_name='products', verbose_name='discount_id')
+    category = models.ForeignKey(to=ProductCategory, on_delete=models.DO_NOTHING, related_name='products',
+                                 verbose_name='category_id')
+    inventory = models.OneToOneField(to=ProductInventory, on_delete=models.DO_NOTHING, related_name='product',
+                                     verbose_name='inventory_id')
+    discount = models.ForeignKey(to=Discount, on_delete=models.DO_NOTHING, related_name='products',
+                                 verbose_name='discount_id')
 
     class Meta:
         verbose_name = 'Product'
@@ -64,5 +66,3 @@ class Product(Model, TimeStampedModel):
 
     def __str__(self):
         return self.name
-
-

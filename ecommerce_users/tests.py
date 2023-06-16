@@ -1,10 +1,9 @@
-from ecommerce_users.models import CustomUser
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
-from ecommerce_products.models import Product
+from ecommerce_users.models import CustomUser
 
 
 class EcommerceUsersTestCase(APITestCase):
@@ -65,4 +64,3 @@ class EcommerceUsersTestCase(APITestCase):
         response = self.client.post('/users/', data=data, format='vnd.api+json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CustomUser.objects.all().count(), self.initial_users + 1)
-

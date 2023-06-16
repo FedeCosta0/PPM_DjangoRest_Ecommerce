@@ -1,6 +1,6 @@
+from rest_framework import serializers
 from rest_framework import status
 from rest_framework.exceptions import APIException
-from rest_framework import serializers
 
 from .models import Product, ProductCategory, ProductInventory, Discount
 

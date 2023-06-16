@@ -1,13 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
-from rest_framework.permissions import IsAuthenticated
 
-from ecommerce_cart.models import ShoppingSession
 from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission
 from .models import Product, ProductCategory, ProductInventory, Discount
-from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, \
-    ProductInventorySerializer, DiscountSerializer
+from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, ProductInventorySerializer, DiscountSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):

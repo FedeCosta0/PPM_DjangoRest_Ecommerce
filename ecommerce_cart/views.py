@@ -25,6 +25,8 @@ class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMix
         user = self.request.user
         return ShoppingSession.objects.filter(user=user)
 
+
+
     def create(self, request):
         user = request.user
         total = 0.00

@@ -9,7 +9,10 @@ class ShoppingSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingSession
         fields = [
-            '__all__'
+            'id',
+            'user',
+            'total',
+            'cart_product'
         ]
 
 

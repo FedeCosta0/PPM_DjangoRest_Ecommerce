@@ -52,7 +52,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
             shopping_session.total += product.price * quantity
             cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
                                                       quantity=quantity)
-            return Response(CartProductSerializer(cart_product.data))
+            return Response(CartProductSerializer(cart_product))
 
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)

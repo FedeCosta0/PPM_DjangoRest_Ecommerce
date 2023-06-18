@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from ecommerce_cart.models import ShoppingSession, CartProduct
 from ecommerce_cart.permissions import ShoppingSessionPermission, CartProductPermission
 from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer
+from ecommerce_products.models import Product
 
 
 # Create your views here.
@@ -45,7 +46,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-            product = data['product']
+            product = Product.objects.get(id=data['product'])
             quantity = data['quantity']
             shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
             shopping_session.total += product.price * quantity

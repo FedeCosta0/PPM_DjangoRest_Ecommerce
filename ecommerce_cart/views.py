@@ -8,7 +8,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from ecommerce_cart.models import ShoppingSession, CartProduct
-from ecommerce_cart.permissions import ShoppingSessionPermission
+from ecommerce_cart.permissions import ShoppingSessionPermission, CartProductPermission
 from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer
 
 
@@ -34,7 +34,7 @@ class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMix
 
 class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,
                          viewsets.GenericViewSet):
-    permission_classes = (ShoppingSessionPermission,)
+    permission_classes = (CartProductPermission,)
     serializer_class = CartProductSerializer
     authentication_classes = (TokenAuthentication,)
 
@@ -45,9 +45,10 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-            shopping_session = ShoppingSession.objects.get_or_create(user=request.user)
             product = data['product']
             quantity = data['quantity']
+            shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
+            shopping_session.total += product.price * quantity
             cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
                                                       quantity=quantity)
             return Response(CartProductSerializer(cart_product.data))

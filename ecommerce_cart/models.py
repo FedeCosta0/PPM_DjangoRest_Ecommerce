@@ -6,12 +6,9 @@ from ecommerce_users.models import CustomUser
 from utils.model_abstracts import Model
 
 
-# Create your models here.
-
-
 class ShoppingSession(Model, TimeStampedModel):
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='shopping_session',
-                             verbose_name='user_id')
+                                verbose_name='user_id')
     total = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
 

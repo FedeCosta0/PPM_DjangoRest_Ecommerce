@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ecommerce_cart.models import ShoppingSession, CartProduct
@@ -35,12 +36,12 @@ class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMix
 
 class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,
                          viewsets.GenericViewSet):
-    permission_classes = (CartProductPermission,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = CartProductSerializer
     authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
-        current_shopping_session, created = ShoppingSession.objects.get_or_create(user_id=self.request.user.id)
+        current_shopping_session, created = ShoppingSession.objects.get_or_create(user=self.request.user.id)
         return CartProduct.objects.filter(shopping_session=current_shopping_session)
 
     def create(self, request):

@@ -40,8 +40,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
     authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
-        user = self.request.user
-        current_shopping_session = ShoppingSession.objects.get(user=user.id)
+        current_shopping_session, created = ShoppingSession.objects.get_or_create(user=self.request.user)
         return CartProduct.objects.filter(shopping_session=current_shopping_session)
 
     def create(self, request):

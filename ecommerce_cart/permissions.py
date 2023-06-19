@@ -14,4 +14,12 @@ class ShoppingSessionPermission(permissions.BasePermission):
 
 
 class CartProductPermission(permissions.BasePermission):
-    pass
+    def has_permission(self, request, view):
+        if view.action == 'list':
+            return bool(request.user.is_authenticated)
+        elif view.action in ['create', 'retrieve', 'update', 'partial_update', 'destroy']:
+            return bool(request.user.is_authenticated)
+
+    def has_object_permission(self, request, view, obj):
+        if view.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            return bool(request.user == obj.user or request.user.is_admin)

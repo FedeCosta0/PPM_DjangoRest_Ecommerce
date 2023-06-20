@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication
+from knox.auth import TokenAuthentication
 
 from .models import Product, ProductCategory, ProductInventory, Discount
 from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission

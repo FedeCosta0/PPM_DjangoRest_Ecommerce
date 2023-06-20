@@ -22,7 +22,7 @@ urlpatterns = [
     path('contact/', core_views.ContactAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
-    path('logout-all/', LogoutAllView),
+    path('logout-all/', LogoutAllView.as_view()),
 ]
 
 urlpatterns += router.urls

@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -29,11 +30,11 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'rest_framework',
-    'rest_framework.authtoken',  # Used to enable token authentication
     'core',
     'ecommerce_products',
     'ecommerce_users',
     'ecommerce_cart',
+    'knox'
 ]
 
 MIDDLEWARE = [
@@ -129,7 +130,7 @@ REST_FRAMEWORK = {
         'rest_framework_json_api.parsers.JSONParser',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'knox.auth.TokenAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework_json_api.renderers.JSONRenderer',
@@ -149,10 +150,11 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
 }
 
-REST_REGISTRATION = {
-
-}
-
 CSRF_TRUSTED_ORIGINS = ['https://*.web-production-db80.up.railway.app']
 
 AUTH_USER_MODEL = "ecommerce_users.CustomUser"
+
+REST_KNOX = {
+    'USER_SERIALIZER': 'ecommerce_users.serializers.UserSerializer',
+    'TOKEN_TTL': timedelta(hours=10)
+}

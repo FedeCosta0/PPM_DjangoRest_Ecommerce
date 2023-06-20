@@ -1,6 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from django.contrib.auth import authenticate
 
 from ecommerce_users.models import CustomUser
 
@@ -46,3 +47,26 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(style={'input_type': 'password'}, trim_whitespace=False)
+
+    def validate(self, attrs):
+        email = attrs.get('email').lower()
+        password = attrs.get('password')
+
+        if not email or not password:
+            raise serializers.ValidationError("Both email and password are required")
+
+        if not CustomUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError('Wrong credentials')
+
+        user = authenticate(request=self.context.get('request'), email=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError('Wrong credentials')
+
+        attrs['user'] = user
+        return attrs

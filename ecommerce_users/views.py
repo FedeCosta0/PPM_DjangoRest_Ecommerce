@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from rest_framework.authentication import TokenAuthentication
+from knox.auth import TokenAuthentication
 from knox import views as knox_views
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import login

@@ -2,7 +2,7 @@ from json import JSONDecodeError
 
 from django.http import JsonResponse
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication
+from knox.auth import TokenAuthentication
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated

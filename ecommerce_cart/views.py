@@ -62,9 +62,8 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
             if serializer.is_valid(raise_exception=True):
                 print(serializer.validated_data)
                 print(repr(serializer.validated_data))
-                product_id = serializer.validated_data['product']
+                product = serializer.validated_data['product']
                 quantity = serializer.validated_data['quantity']
-                product = Product.objects.get(id=product_id)
                 shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
                 shopping_session.total += product.price * quantity
                 shopping_session.save()

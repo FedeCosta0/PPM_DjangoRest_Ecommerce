@@ -38,6 +38,7 @@ class CartAPIView(views.APIView):
     def get(self, request):
         cart = ShoppingSession.objects.get_or_create(user=request.user)
         serializer = ShoppingSessionSerializer(cart)
+        print(repr(serializer))
         return Response(serializer.data)
 
 

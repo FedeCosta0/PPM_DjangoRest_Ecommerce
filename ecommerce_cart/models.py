@@ -8,12 +8,12 @@ from utils.model_abstracts import Model
 
 class ShoppingSession(Model, TimeStampedModel):
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='shopping_session',
-                                verbose_name='user_id')
+                                verbose_name='user')
     total = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
 
 class CartProduct(Model, TimeStampedModel):
-    shopping_session = models.ForeignKey(to=ShoppingSession, on_delete=models.CASCADE, related_name='cart_product',
+    shopping_session = models.ForeignKey(to=ShoppingSession, on_delete=models.CASCADE, related_name='cart_products',
                                          verbose_name='shopping_session_id')
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='cart_product',
                                    verbose_name='product_id')

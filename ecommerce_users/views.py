@@ -41,8 +41,6 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, viewsets
             serializer = self.serializer_class(data=data)
 
             if serializer.is_valid(raise_exception=True):
-                print(serializer.validated_data)
-                print(repr(serializer.validated_data))
                 validated_data = serializer.validated_data
                 user = CustomUser.objects.create(email=validated_data['email'], password=validated_data['password'],
                                                  first_name=validated_data['first_name'],

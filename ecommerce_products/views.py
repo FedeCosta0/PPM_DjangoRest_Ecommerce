@@ -34,19 +34,16 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-            print('data:')
-            print(data)
             serializer = self.serializer_class(data=data)
-            print('serializer:')
-            print(repr(serializer))
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
                 category = ProductCategory.objects.get(id=data['category'])
-                print('validated_data:')
-                print(validated_data)
+                inventory_instance = ProductInventory.objects.create()
+                discount_instance, created = Discount.objects.get_or_create(name="NullDiscount")
                 product = Product.objects.create(name=validated_data['name'], description=validated_data['description'],
                                                  price=validated_data['price'],
-                                                 category=category)
+                                                 category=category, inventory=inventory_instance,
+                                                 discount=discount_instance)
                 return Response(ProductCreationSerializer(product).data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

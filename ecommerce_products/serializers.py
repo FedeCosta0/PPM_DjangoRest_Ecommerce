@@ -21,13 +21,6 @@ class ProductCreationSerializer(serializers.ModelSerializer):
             'category',
         ]
 
-    def create(self, validated_data):
-        inventory_instance = ProductInventory.objects.create()
-        discount_instance, created = Discount.objects.get_or_create(name="NullDiscount")
-        product_instance = Product.objects.create(**validated_data, inventory=inventory_instance,
-                                                  discount=discount_instance)
-        return product_instance
-
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.ReadOnlyField(source='category.name')

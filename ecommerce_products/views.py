@@ -41,11 +41,12 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
             print(repr(serializer))
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
+                category = ProductCategory.objects.get(id=data['category'])
                 print('validated_data:')
                 print(validated_data)
                 product = Product.objects.create(name=validated_data['name'], description=validated_data['description'],
                                                  price=validated_data['price'],
-                                                 category=data['category'])
+                                                 category=category)
                 return Response(ProductCreationSerializer(product).data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

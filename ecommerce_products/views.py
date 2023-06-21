@@ -34,11 +34,15 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
     def create(self, request):
         try:
             data = JSONParser().parse(request)
+            print('data:')
+            print(data)
             serializer = self.serializer_class(data=data)
+            print('serializer:')
+            print(repr(serializer))
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
+                print('validated_data:')
                 print(validated_data)
-                print(repr(validated_data))
                 product = Product.objects.create(name=validated_data['name'], description=validated_data['description'],
                                                  price=validated_data['price'],
                                                  category=validated_data['category'])

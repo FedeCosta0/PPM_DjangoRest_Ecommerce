@@ -3,6 +3,7 @@ from json import JSONDecodeError
 from django.http import JsonResponse
 from rest_framework import viewsets
 from knox.auth import TokenAuthentication
+from rest_framework import views
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -12,9 +13,6 @@ from ecommerce_cart.models import ShoppingSession, CartProduct
 from ecommerce_cart.permissions import ShoppingSessionPermission, CartProductPermission
 from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer
 from ecommerce_products.models import Product
-
-
-# Create your views here.
 
 
 class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,
@@ -32,6 +30,15 @@ class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMix
         total = 0.00
         shopping_session = ShoppingSession.objects.create(user=user, total=total)
         return Response(ShoppingSessionSerializer(shopping_session).data)
+
+
+class CartAPIView(views.APIView):
+    serializer_class = ShoppingSessionSerializer
+
+    def get(self, request):
+        cart = ShoppingSession.objects.get_or_create(user=request.user)
+        serializer = ShoppingSessionSerializer(cart)
+        return Response(serializer.data)
 
 
 class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,

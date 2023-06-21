@@ -60,6 +60,8 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
             serializer = CartProductCreationSerializer(data=data)
 
             if serializer.is_valid(raise_exception=True):
+                print(serializer.validated_data)
+                print(repr(serializer.validated_data))
                 product_id = serializer.validated_data['product']
                 quantity = serializer.validated_data['quantity']
                 product = Product.objects.get(id=product_id)

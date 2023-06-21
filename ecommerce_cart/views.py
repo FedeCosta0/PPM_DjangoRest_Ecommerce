@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from ecommerce_cart.models import ShoppingSession, CartProduct
 from ecommerce_cart.permissions import ShoppingSessionPermission, CartProductPermission
 from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer, CartProductCreationSerializer
-from ecommerce_products.models import Product
+
 
 
 class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,
@@ -69,7 +69,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
                 shopping_session.save()
                 cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
                                                           quantity=quantity)
-                return Response(CartProductSerializer(cart_product).data)
+                return Response(CartProductSerializer(cart_product).data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:

@@ -30,7 +30,7 @@ class ProductCreationSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.RelatedField(read_only=True)
+    category = serializers.ReadOnlyField(source='category.name')
     class Meta:
         model = Product
         fields = [

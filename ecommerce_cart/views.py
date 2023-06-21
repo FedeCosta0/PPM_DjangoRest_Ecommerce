@@ -60,6 +60,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
             quantity = data['quantity']
             shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
             shopping_session.total += product.price * quantity
+            shopping_session.save()
             cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
                                                       quantity=quantity)
             return Response(CartProductSerializer(cart_product).data)

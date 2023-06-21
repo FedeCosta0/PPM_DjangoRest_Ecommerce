@@ -18,6 +18,17 @@ class CartProductSerializer(serializers.ModelSerializer):
         ]
 
 
+class CartProductCreationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CartProduct
+        fields = [
+            'shopping_session',
+            'product',
+            'quantity'
+        ]
+
+
 class ShoppingSessionSerializer(serializers.ModelSerializer):
     cart_products = CartProductSerializer(many=True, read_only=True)
     user = serializers.ReadOnlyField(source='user.email')

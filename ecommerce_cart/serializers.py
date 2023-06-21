@@ -3,8 +3,18 @@ from rest_framework import serializers
 from .models import ShoppingSession, CartProduct
 
 
+class CartProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartProduct
+        fields = [
+            'product',
+            'quantity'
+        ]
+
+
 class ShoppingSessionSerializer(serializers.ModelSerializer):
-    cart_products = serializers.StringRelatedField(many=True, read_only=True)
+    cart_products = CartProductSerializer(many=True, read_only=True)
+    user = serializers.ReadOnlyField(source='user.email')
 
     class Meta:
         model = ShoppingSession
@@ -12,14 +22,4 @@ class ShoppingSessionSerializer(serializers.ModelSerializer):
             'user',
             'total',
             'cart_products'
-        ]
-
-
-class CartProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CartProduct
-        fields = [
-            'shopping_session',
-            'product',
-            'quantity'
         ]

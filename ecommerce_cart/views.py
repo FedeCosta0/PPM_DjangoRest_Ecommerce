@@ -1,7 +1,7 @@
 from json import JSONDecodeError
 
 from django.http import JsonResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from knox.auth import TokenAuthentication
 from rest_framework import views
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from ecommerce_cart.models import ShoppingSession, CartProduct
 from ecommerce_cart.permissions import ShoppingSessionPermission, CartProductPermission
-from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer
+from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer, CartProductCreationSerializer
 from ecommerce_products.models import Product
 
 
@@ -56,16 +56,21 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-            print(data)
-            print(repr(data))
-            product = Product.objects.get(id=data['product'])
-            quantity = data['quantity']
-            shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
-            shopping_session.total += product.price * quantity
-            shopping_session.save()
-            cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
-                                                      quantity=quantity)
-            return Response(CartProductSerializer(cart_product).data)
 
+            serializer = CartProductCreationSerializer(data=data)
+
+            if serializer.is_valid(raise_exception=True):
+                product_id = serializer.validated_data['product']
+                quantity = serializer.validated_data['quantity']
+                product = Product.objects.get(id=product_id)
+                shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
+                shopping_session.total += product.price * quantity
+                shopping_session.save()
+                cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
+                                                          quantity=quantity)
+                return Response(CartProductSerializer(cart_product).data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
+

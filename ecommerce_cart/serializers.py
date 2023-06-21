@@ -23,7 +23,6 @@ class CartProductCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartProduct
         fields = [
-            'shopping_session',
             'product',
             'quantity'
         ]

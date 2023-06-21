@@ -31,6 +31,7 @@ class ProductCreationSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.ReadOnlyField(source='category.name')
+    discount = serializers.ReadOnlyField(source='discount.discount_percent')
     class Meta:
         model = Product
         fields = [
@@ -38,7 +39,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'price',
             'category',
-            'inventory',
             'discount',
         ]
 

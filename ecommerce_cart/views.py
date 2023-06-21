@@ -56,6 +56,8 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
     def create(self, request):
         try:
             data = JSONParser().parse(request)
+            print(data)
+            print(repr(data))
             product = Product.objects.get(id=data['product'])
             quantity = data['quantity']
             shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)

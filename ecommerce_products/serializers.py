@@ -30,6 +30,7 @@ class ProductCreationSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = serializers.RelatedField(read_only=True)
     class Meta:
         model = Product
         fields = [

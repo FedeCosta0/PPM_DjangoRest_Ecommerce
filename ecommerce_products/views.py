@@ -1,8 +1,8 @@
 from json import JSONDecodeError
 
 from django.http import JsonResponse
-from rest_framework import viewsets, status
 from knox.auth import TokenAuthentication
+from rest_framework import viewsets, status
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -24,7 +24,7 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
         'retrieve': ProductSerializer,
         'create': ProductCreationSerializer,
     }
-    
+
     def get_serializer_class(self):
         try:
             return self.serializer_action_classes[self.action]
@@ -51,11 +51,26 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
 
 
-class ProductCategoryViewSet(viewsets.ModelViewSet):
+class ProductCategoryViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin,
+                             viewsets.GenericViewSet):
     queryset = ProductCategory.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductCategoryPermission,)
     serializer_class = ProductCategorySerializer
+
+    def create(self, request):
+        try:
+            data = JSONParser().parse(request)
+            serializer = self.serializer_class(data=data)
+            if serializer.is_valid(raise_exception=True):
+                validated_data = serializer.validated_data
+                category = ProductCategory.objects.create(name=validated_data['name'],
+                                                          description=validated_data['description'])
+                return Response(ProductCategorySerializer(category).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
 
 
 class ProductInventoryViewSet(viewsets.ModelViewSet):

@@ -1,18 +1,16 @@
 from json import JSONDecodeError
 
 from django.http import JsonResponse
-from rest_framework import viewsets, status
 from knox.auth import TokenAuthentication
 from rest_framework import views
+from rest_framework import viewsets, status
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ecommerce_cart.models import ShoppingSession, CartProduct
 from ecommerce_cart.permissions import ShoppingSessionPermission, CartProductPermission
 from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer, CartProductCreationSerializer
-
 
 
 class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,
@@ -45,7 +43,7 @@ class CartAPIView(views.APIView):
 
 class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,
                          viewsets.GenericViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (CartProductPermission,)
     serializer_class = CartProductSerializer
     authentication_classes = (TokenAuthentication,)
 
@@ -56,9 +54,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-
             serializer = CartProductCreationSerializer(data=data)
-
             if serializer.is_valid(raise_exception=True):
                 print(serializer.validated_data)
                 print(repr(serializer.validated_data))
@@ -74,4 +70,3 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
-

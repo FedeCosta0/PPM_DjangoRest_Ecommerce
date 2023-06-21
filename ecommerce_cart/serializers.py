@@ -5,14 +5,14 @@ from .models import ShoppingSession, CartProduct
 
 class CartProductSerializer(serializers.ModelSerializer):
     product_id = serializers.ReadOnlyField(source='product.id')
-    product_name = serializers.ReadOnlyField(source='product.name')
-    product_price = serializers.ReadOnlyField(source='product.price')
+    name = serializers.ReadOnlyField(source='product.name')
+    price = serializers.ReadOnlyField(source='product.price')
 
     class Meta:
         model = CartProduct
         fields = [
             'product_id',
-            'product_name',
+            'name',
             'price',
             'quantity'
         ]

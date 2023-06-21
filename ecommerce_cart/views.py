@@ -37,9 +37,10 @@ class CartAPIView(views.APIView):
 
     def get(self, request):
         cart = ShoppingSession.objects.get_or_create(user=request.user)
-        serializer = ShoppingSessionSerializer(cart)
+        serializer = ShoppingSessionSerializer(instance=cart)
         print(repr(serializer.data))
-        return Response(serializer.data)
+        print(repr(serializer))
+        return Response(data=serializer.data)
 
 
 class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, UpdateModelMixin,

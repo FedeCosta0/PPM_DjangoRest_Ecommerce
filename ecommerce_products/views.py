@@ -44,7 +44,7 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
                                                  price=validated_data['price'],
                                                  category=category, inventory=inventory_instance,
                                                  discount=discount_instance)
-                return Response(ProductCreationSerializer(product).data, status=status.HTTP_201_CREATED)
+                return Response(ProductSerializer(product).data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:

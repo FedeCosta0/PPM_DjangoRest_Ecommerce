@@ -3,7 +3,8 @@ from json import JSONDecodeError
 from django.http import JsonResponse
 from knox.auth import TokenAuthentication
 from rest_framework import viewsets, status
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin, \
+    CreateModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
@@ -73,11 +74,28 @@ class ProductCategoryViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixi
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
 
 
-class ProductInventoryViewSet(viewsets.ModelViewSet):
+class ProductInventoryViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMixin, DestroyModelMixin,
+                              viewsets.GenericViewSet):
     queryset = ProductInventory.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductInventoryPermission,)
     serializer_class = ProductInventorySerializer
+
+    def update(self, request):
+        try:
+            data = JSONParser().parse(request)
+            serializer = self.serializer_class(data=data)
+            if serializer.is_valid(raise_exception=True):
+                validated_data = serializer.validated_data
+                quantity = validated_data['stock']
+                product_inventory = self.get_object()
+                product_inventory.manage_stock(quantity)
+                product_inventory.save()
+                return Response(ProductInventorySerializer(product_inventory).data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
 
 
 class DiscountViewSet(viewsets.ModelViewSet):

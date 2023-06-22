@@ -16,7 +16,7 @@ class ProductInventory(Model, TimeStampedModel):
 
     def manage_stock(self, qty):
         # used to reduce Product stock
-        new_stock = self.stock - int(qty)
+        new_stock = self.stock + int(qty)
         self.stock = new_stock
         self.save()
 

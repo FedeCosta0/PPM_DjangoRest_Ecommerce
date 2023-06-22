@@ -81,7 +81,7 @@ class ProductInventoryViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMix
     permission_classes = (ProductInventoryPermission,)
     serializer_class = ProductInventorySerializer
 
-    def update(self, request):
+    def update(self, request, pk):
         try:
             data = JSONParser().parse(request)
             serializer = self.serializer_class(data=data)

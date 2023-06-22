@@ -83,7 +83,7 @@ class UserAddressViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, v
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-            data['user'] = request.user
+            data['user'] = request.user.id
             print(data)
             serializer = self.serializer_class(data=data)
 

@@ -4,7 +4,7 @@ from rest_framework import routers
 from knox.views import LogoutView, LogoutAllView
 
 from ecommerce_products.views import ProductViewSet, ProductInventoryViewSet, ProductCategoryViewSet, DiscountViewSet
-from ecommerce_users.views import UserViewSet, LoginAPIView
+from ecommerce_users.views import UserViewSet, LoginAPIView, UserAddressViewSet
 from ecommerce_cart.views import ShoppingSessionViewSet, CartProductViewSet, CartAPIView
 from core import views as core_views
 
@@ -16,6 +16,7 @@ router.register(r'discount', DiscountViewSet, basename='discount')
 # router.register(r'cart', ShoppingSessionViewSet, basename='cart')
 router.register(r'cart-product', CartProductViewSet, basename='cart-product')
 router.register(r'users', UserViewSet, basename='users')
+router.register(r'addresses', UserAddressViewSet, basename='addresses')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

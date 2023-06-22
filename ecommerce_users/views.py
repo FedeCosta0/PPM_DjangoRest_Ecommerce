@@ -88,6 +88,7 @@ class UserAddressViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, v
 
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
+                print(repr(validated_data))
                 user_address = UserAddress.objects.create(user=validated_data['user'], address=validated_data['address'],
                                                           city=validated_data['city'], postal_code=validated_data['postal_code'],
                                                           country=validated_data['country'], telephone=validated_data['telephone'])

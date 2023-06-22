@@ -89,7 +89,7 @@ class ProductInventoryViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMix
                 validated_data = serializer.validated_data
                 quantity = validated_data['stock']
                 product_inventory = self.get_object()
-                product_inventory.manage_stock(quantity)
+                product_inventory.add_stock(quantity)
                 product_inventory.save()
                 return Response(ProductInventorySerializer(product_inventory).data, status=status.HTTP_200_OK)
             else:

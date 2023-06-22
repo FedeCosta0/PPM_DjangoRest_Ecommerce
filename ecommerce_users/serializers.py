@@ -3,17 +3,30 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from ecommerce_users.models import CustomUser
+from ecommerce_users.models import CustomUser, UserAddress
 
 
-# Serializer to Get User Details using Django Token Authentication
+class UserAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = [
+            'user',
+            'address',
+            'city',
+            'postal_code',
+            'country',
+            'telephone'
+        ]
+
+
 class UserSerializer(serializers.ModelSerializer):
+    addresses = UserAddressSerializer(many=True, read_only=True)
+
     class Meta:
         model = CustomUser
         fields = ["id", "email", "first_name", "last_name"]
 
 
-# Serializer to Register User
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,

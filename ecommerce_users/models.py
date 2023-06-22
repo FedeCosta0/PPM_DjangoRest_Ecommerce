@@ -69,3 +69,13 @@ class CustomUser(AbstractUser, Model):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+class UserAddress(Model):
+    user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='user_address')
+    address = models.CharField(max_length=50, null=False)
+    city = models.CharField(max_length=50, null=False)
+    postal_code = models.CharField(max_length=10, null=False)
+    country = models.CharField(max_length=20, null=False)
+    telephone = models.CharField(max_length=20)
+

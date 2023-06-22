@@ -10,9 +10,9 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from ecommerce_users.models import CustomUser
-from .permissions import UserPermission
-from .serializers import UserSerializer, UserRegistrationSerializer, UserLoginSerializer
+from ecommerce_users.models import CustomUser, UserAddress
+from .permissions import UserPermission, UserAddressPermission
+from .serializers import UserSerializer, UserRegistrationSerializer, UserLoginSerializer, UserAddressSerializer
 
 
 class UserViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, viewsets.GenericViewSet):
@@ -37,7 +37,6 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, viewsets
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-
             serializer = self.serializer_class(data=data)
 
             if serializer.is_valid(raise_exception=True):
@@ -68,5 +67,29 @@ class LoginAPIView(knox_views.LoginView):
                 return Response(response.data, status=status.HTTP_200_OK)
             else:
                 return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
+
+
+class UserAddressViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, viewsets.GenericViewSet):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (UserAddressPermission,)
+    serializer_class = UserAddressSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return UserAddress.objects.filter(user=user)
+
+    def create(self, request):
+        try:
+            data = JSONParser().parse(request)
+            serializer = self.serializer_class(data=data)
+
+            if serializer.is_valid(raise_exception=True):
+                validated_data = serializer.validated_data
+                user_address = UserAddress.objects.create(validated_data)
+                return Response(UserAddressSerializer(user_address).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)

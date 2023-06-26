@@ -37,13 +37,10 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, viewsets
     def create(self, request):
         try:
             data = JSONParser().parse(request)
-            serializer = self.serializer_class(data=data)
-
+            serializer = self.get_serializer_class()(data=data)
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
-                user = CustomUser.objects.create(email=validated_data['email'], password=validated_data['password'],
-                                                 first_name=validated_data['first_name'],
-                                                 last_name=validated_data['last_name'])
+                user = serializer.create(validated_data=validated_data)
                 return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -78,18 +75,19 @@ class UserAddressViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, v
 
     def get_queryset(self):
         user = self.request.user
-        return UserAddress.objects.filter(user=user)
+        if user.is_admin:
+            return UserAddress.objects.all()
+        else:
+            return UserAddress.objects.filter(user=user)
 
     def create(self, request):
         try:
             data = JSONParser().parse(request)
             data['user'] = request.user.id
-            print(data)
             serializer = self.serializer_class(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
-                print(repr(validated_data))
                 user_address = UserAddress.objects.create(user=validated_data['user'], address=validated_data['address'],
                                                           city=validated_data['city'], postal_code=validated_data['postal_code'],
                                                           country=validated_data['country'], telephone=validated_data['telephone'])

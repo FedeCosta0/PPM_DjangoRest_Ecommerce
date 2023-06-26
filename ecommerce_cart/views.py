@@ -36,8 +36,6 @@ class CartAPIView(views.APIView):
     def get(self, request):
         cart, created = ShoppingSession.objects.get_or_create(user=request.user)
         serializer = ShoppingSessionSerializer(instance=cart)
-        print(repr(serializer.data))
-        print(repr(serializer))
         return Response(data=serializer.data)
 
 
@@ -56,8 +54,6 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
             data = JSONParser().parse(request)
             serializer = CartProductCreationSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
-                print(serializer.validated_data)
-                print(repr(serializer.validated_data))
                 product = serializer.validated_data['product']
                 quantity = serializer.validated_data['quantity']
                 shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)

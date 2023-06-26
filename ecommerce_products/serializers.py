@@ -21,7 +21,6 @@ class ProductCreationSerializer(serializers.ModelSerializer):
             'category',
         ]
 
-
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.ReadOnlyField(source='category.name')
     discount = serializers.ReadOnlyField(source='discount.discount_percent')

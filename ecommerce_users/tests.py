@@ -27,8 +27,8 @@ class EcommerceUsersTestCase(APITestCase):
 
         self.initial_users = CustomUser.objects.all().count()
         self.initial_addresses = UserAddress.objects.all().count()
-        self.initial_number_addresses_user1 = len(UserAddress.objects.filter(user=self.user1))
-        self.initial_number_addresses_user2 = len(UserAddress.objects.filter(user=self.user2))
+        self.initial_addresses_user1 = len(UserAddress.objects.filter(user=self.user1))
+        self.initial_addresses_user2 = len(UserAddress.objects.filter(user=self.user2))
 
         self.client = APIClient()
 
@@ -124,7 +124,7 @@ class EcommerceUsersTestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
         response = self.client.get('/addresses/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), self.initial_number_addresses_user1)
+        self.assertEqual(len(response.data), self.initial_addresses_user1)
         for address in response.data:
             self.assertEqual(address['user'], self.address1.user.id)
 
@@ -132,7 +132,7 @@ class EcommerceUsersTestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
         response = self.client.get('/addresses/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), self.initial_number_addresses_user2)
+        self.assertEqual(len(response.data), self.initial_addresses_user2)
         for address in response.data:
             self.assertEqual(address['user'], self.address2.user.id)
 
@@ -145,9 +145,8 @@ class EcommerceUsersTestCase(APITestCase):
     def test_get_another_user_address_with_non_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.user2)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        print(f'/addresses/{self.address1.id}/')
         response = self.client.get(f'/addresses/{self.address1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_own_address_with_non_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.user1)

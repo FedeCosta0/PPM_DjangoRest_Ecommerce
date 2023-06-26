@@ -1,121 +1,187 @@
+from knox.models import AuthToken
+
 from ecommerce_users.models import CustomUser
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
-from ecommerce_products.models import Product
+from ecommerce_products.models import Product, ProductCategory, ProductInventory, Discount
 
 
 class EcommerceProductsTestCase(APITestCase):
-    """
-    Test suite for Items and Orders
-    """
 
     def setUp(self):
+        self.user1 = CustomUser.objects.create_user(email="TestMail1@mail.com", password="TestPassword1",
+                                                    first_name="TestFirstName1", last_name="TestLastName1")
+        self.user2 = CustomUser.objects.create_user(email="TestMail2@mail.com", password="TestPassword2",
+                                                    first_name="TestFirstName2", last_name="TestLastName2")
+        self.admin_user = CustomUser.objects.create_superuser(email="TestMail5@mail.com", password="TestPassword5")
 
-        Product.objects.create(title="Demo item 1", description="This is a description for demo 1", price=500, stock=20)
-        Product.objects.create(title="Demo item 2", description="This is a description for demo 2", price=700, stock=15)
-        Product.objects.create(title="Demo item 3", description="This is a description for demo 3", price=300, stock=18)
-        Product.objects.create(title="Demo item 4", description="This is a description for demo 4", price=400, stock=14)
-        Product.objects.create(title="Demo item 5", description="This is a description for demo 5", price=500, stock=30)
-        self.items = Product.objects.all()
-        self.user = CustomUser.objects.create_user(
-            email='testuser1@test.com',
-            password='this_is_a_test',
-        )
-        Order.objects.create(item=Product.objects.first(), user=CustomUser.objects.first(), quantity=1)
-        Order.objects.create(item=Product.objects.first(), user=CustomUser.objects.first(), quantity=2)
+        self.category1 = ProductCategory.objects.create(name="TestProductCategoryName1",
+                                                        description="Test Product Category Description 1")
+        self.category2 = ProductCategory.objects.create(name="TestProductCategoryName2",
+                                                        description="Test Product Category Description 2")
 
-        # The app uses token authentication
-        self.token = Token.objects.get(user=self.user)
+        self.product_inventory1 = ProductInventory.objects.create(stock=10)
+        self.product_inventory2 = ProductInventory.objects.create(stock=15)
+
+        self.discount1 = Discount.objects.create(name="TestDiscountName1", description="Test Discount Description 1",
+                                                 discount_percent=10.00, active=True)
+        self.discount2 = Discount.objects.create(name="TestDiscountName2", description="Test Discount Description 2",
+                                                 discount_percent=20.00, active=True)
+
+        self.product1 = Product.objects.create(name="TestProductName1", description="Test Product Description 1",
+                                               price=49.99, category=self.category1,
+                                               inventory=self.product_inventory1, discount=self.discount1)
+        self.product2 = Product.objects.create(name="TestProductName2", description="Test Product Description 2",
+                                               price=99.00, category=self.category2,
+                                               inventory=self.product_inventory2, discount=self.discount2)
+
+        self.initial_products = Product.objects.all().count()
+        self.initial_products_category1 = Product.objects.filter(category=self.category1).count()
+        self.initial_products_category2 = Product.objects.filter(category=self.category2).count()
+        self.initial_categories = ProductCategory.objects.all().count()
+        self.initial_stock1 = self.product_inventory1.stock
+        self.initial_stock2 = self.product_inventory2.stock
+
         self.client = APIClient()
 
-        # We pass the token in all calls to the API
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-
-    def test_get_all_items(self):
-        """
-        test ItemsViewSet list method
-        """
-        self.assertEqual(self.items.count(), 5)
-        response = self.client.get('/item/')
+    def test_get_all_products_with_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get('/products/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_one_item(self):
-        """
-        test ItemsViewSet retrieve method
-        """
-        for item in self.items:
-            response = self.client.get(f'/item/{item.id}/')
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_order_is_more_than_stock(self):
-        """
-        test Product.check_stock when order.quantity > item.stock
-        """
-        for i in self.items:
-            current_stock = i.stock
-            self.assertEqual(i.check_stock(current_stock + 1), False)
-
-    def test_order_equals_stock(self):
-        """
-        test Product.check_stock when order.quantity == item.stock
-        """
-        for i in self.items:
-            current_stock = i.stock
-            self.assertEqual(i.check_stock(current_stock), True)
-
-    def test_order_is_less_than_stock(self):
-        """
-        test Product.check_stock when order.quantity < item.stock
-        """
-        for i in self.items:
-            current_stock = i.stock
-            self.assertTrue(i.check_stock(current_stock - 1), True)
-
-    def test_create_order_with_more_than_stock(self):
-        """
-        test OrdersViewSet create method when order.quantity > item.stock
-        """
-        for i in self.items:
-            stock = i.stock
-            data = {"item": str(i.id), "quantity": str(stock + 1)}
-            response = self.client.post(f'/order/', data)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_order_with_less_than_stock(self):
-        """
-        test OrdersViewSet create method when order.quantity < item.stock
-        """
-        for i in self.items:
-            data = {"item": str(i.id), "quantity": 1}
-            response = self.client.post(f'/order/', data)
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_order_with_equal_stock(self):
-        """
-        test OrdersViewSet create method when order.quantity == item.stock
-        """
-        for i in self.items:
-            stock = i.stock
-            data = {"item": str(i.id), "quantity": str(stock)}
-            response = self.client.post(f'/order/', data)
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_get_all_orders(self):
-        """
-        test OrdersViewSet list method
-        """
-        self.assertEqual(Order.objects.count(), 2)
-        response = self.client.get('/order/')
+    def test_get_all_products_with_non_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get('/products/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_one_order(self):
-        """
-        test OrdersViewSet retrieve method
-        """
-        orders = Order.objects.filter(user=self.user)
-        for o in orders:
-            response = self.client.get(f'/order/{o.id}/')
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_get_all_products_with_unauthenticated_user(self):
+        response = self.client.get('/products/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_product_with_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get(f'/products/{self.product1.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_product_with_non_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get(f'/products/{self.product1.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_product_with_unauthenticated_user(self):
+        response = self.client.get(f'/products/{self.product1.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_product_with_admin_user(self):
+        category_id = self.category1.id
+        data = {
+            "name": "TestProduct",
+            "description": "Test Product",
+            "price": 100,
+            "category": category_id
+        }
+
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post('/products/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Product.objects.all().count(), self.initial_products + 1)
+        self.assertEqual(Product.objects.filter(category=self.category1).count(), self.initial_products_category1 + 1)
+        self.assertEqual(Product.objects.filter(category=self.category2).count(), self.initial_products_category2)
+
+    def test_create_product_with_non_admin_user(self):
+        category_id = self.category1.id
+        data = {
+            "name": "TestProduct",
+            "description": "Test Product",
+            "price": 100,
+            "category": category_id
+        }
+
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post('/products/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_product_with_unauthenticated_user(self):
+        category_id = self.category1.id
+        data = {
+            "name": "TestProduct",
+            "description": "Test Product",
+            "price": 100,
+            "category": category_id
+        }
+
+        response = self.client.post('/products/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_all_categories_with_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get('/products-category/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_categories_with_non_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get('/products-category/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_categories_with_unauthenticated_user(self):
+        response = self.client.get('/products-category/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_category_with_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get(f'/products-category/{self.category1.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_category_with_non_admin_user(self):
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get(f'/products-category/{self.category1.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_category_with_unauthenticated_user(self):
+        response = self.client.get(f'/products-category/{self.category1.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_category_with_admin_user(self):
+        data = {
+            "name": "TestCategoryName",
+            "description": "Test Category Description"
+        }
+
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post(f'/products-category/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ProductCategory.objects.all().count(), self.initial_categories + 1)
+
+    def test_create_category_with_non_admin_user(self):
+        data = {
+            "name": "TestCategoryName",
+            "description": "Test Category Description"
+        }
+
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post(f'/products-category/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_category_with_unauthenticated_user(self):
+        data = {
+            "name": "TestCategoryName",
+            "description": "Test Category Description"
+        }
+
+        response = self.client.post(f'/products-category/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

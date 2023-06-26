@@ -38,7 +38,7 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
             serializer = self.get_serializer_class()(data=data)
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
-                category = ProductCategory.objects.get(id=validated_data['category'])
+                category = ProductCategory.objects.get(id=validated_data['category'].id)
                 inventory_instance = ProductInventory.objects.create()
                 discount_instance, created = Discount.objects.get_or_create(name="NullDiscount")
                 product = Product.objects.create(name=validated_data['name'], description=validated_data['description'],

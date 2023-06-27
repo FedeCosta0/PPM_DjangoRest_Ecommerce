@@ -78,4 +78,3 @@ class UserAddress(Model):
     postal_code = models.CharField(max_length=10, null=False)
     country = models.CharField(max_length=20, null=False)
     telephone = models.CharField(max_length=20)
-

@@ -1,12 +1,10 @@
 from knox.models import AuthToken
-
-from ecommerce_users.models import CustomUser
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
 from ecommerce_products.models import Product, ProductCategory, ProductInventory, Discount
+from ecommerce_users.models import CustomUser
 
 
 class EcommerceProductsTestCase(APITestCase):
@@ -120,6 +118,36 @@ class EcommerceProductsTestCase(APITestCase):
         }
 
         response = self.client.post('/products/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_add_product_inventory_stock_with_admin_user(self):
+        quantity = 2
+        data = {"stock": quantity}
+
+        instance, token = AuthToken.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.put(f'/products-inventory/{self.product1.inventory.id}/', data=data,
+                                   format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Product.objects.filter(id=self.product1.id).first().inventory.stock,
+                         self.initial_stock1 + quantity)
+
+    def test_add_product_inventory_stock_with_non_admin_user(self):
+        quantity = 2
+        data = {"stock": quantity}
+
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.put(f'/products-inventory/{self.product1.inventory.id}/', data=data,
+                                   format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_product_inventory_stock_with_unauthenticated_user(self):
+        quantity = 2
+        data = {"stock": quantity}
+
+        response = self.client.put(f'/products-inventory/{self.product1.inventory.id}/', data=data,
+                                   format='vnd.api+json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_all_categories_with_admin_user(self):

@@ -16,5 +16,5 @@ class CartProduct(Model, TimeStampedModel):
     shopping_session = models.ForeignKey(to=ShoppingSession, on_delete=models.CASCADE, related_name='cart_products',
                                          verbose_name='shopping_session_id')
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='cart_product',
-                                   verbose_name='product_id')
+                                verbose_name='product_id')
     quantity = models.PositiveIntegerField(null=False, default=1)

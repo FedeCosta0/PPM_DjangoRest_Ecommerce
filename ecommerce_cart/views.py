@@ -32,6 +32,7 @@ class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMix
 
 class CartAPIView(views.APIView):
     serializer_class = ShoppingSessionSerializer
+    permission_classes = (CartProductPermission,)
 
     def get(self, request):
         cart, created = ShoppingSession.objects.get_or_create(user=request.user)
@@ -57,7 +58,7 @@ class CartProductViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMixin, 
                 product = serializer.validated_data['product']
                 quantity = serializer.validated_data['quantity']
                 shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
-                shopping_session.total += product.price * quantity
+                shopping_session.total += float(product.price) * float(quantity)
                 shopping_session.save()
                 cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
                                                           quantity=quantity)

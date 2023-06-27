@@ -1,12 +1,9 @@
-from collections import OrderedDict
-
 from knox.models import AuthToken
 from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
 from ecommerce_users.models import CustomUser, UserAddress
-from ecommerce_users.serializers import UserAddressSerializer
 
 
 class EcommerceUsersTestCase(APITestCase):
@@ -153,4 +150,3 @@ class EcommerceUsersTestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
         response = self.client.get(f'/addresses/{self.address1.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-

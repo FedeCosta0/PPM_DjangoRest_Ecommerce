@@ -66,6 +66,5 @@ class EcommerceCartTestCase(APITestCase):
         response = self.client.get('/cart/')
 
         self.assertEqual(float(response.data['total']), float(self.product1.price) * float(quantity))
-        print(repr(response.data['cart_products']))
         self.assertEqual(len(response.data['cart_products']), 1)
         self.assertEqual(response.data['cart_products'][0]['quantity'], quantity)

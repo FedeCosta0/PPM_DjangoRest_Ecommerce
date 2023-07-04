@@ -58,6 +58,7 @@ class ProductCategoryViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixi
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductCategoryPermission,)
     serializer_class = ProductCategorySerializer
+    lookup_field = 'slug'
 
     def create(self, request):
         try:

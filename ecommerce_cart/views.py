@@ -2,7 +2,6 @@ from json import JSONDecodeError
 
 from django.http import JsonResponse
 from knox.auth import TokenAuthentication
-from rest_framework import views
 from rest_framework import viewsets, status
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
@@ -30,11 +29,11 @@ class ShoppingSessionViewSet(RetrieveModelMixin, ListModelMixin, DestroyModelMix
         return Response(ShoppingSessionSerializer(shopping_session).data)
 
 
-class CartAPIView(views.APIView):
+class CartAPIView(viewsets.GenericViewSet):
     serializer_class = ShoppingSessionSerializer
     permission_classes = (CartProductPermission,)
 
-    def get(self, request):
+    def retrieve(self, request):
         cart, created = ShoppingSession.objects.get_or_create(user=request.user)
         serializer = ShoppingSessionSerializer(instance=cart)
         return Response(data=serializer.data)

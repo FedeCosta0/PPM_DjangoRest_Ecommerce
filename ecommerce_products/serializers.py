@@ -37,6 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'discount',
             'is_discount_active',
         ]
+        lookup_field = 'slug'
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):

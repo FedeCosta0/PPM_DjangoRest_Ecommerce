@@ -1,9 +1,11 @@
 from django.db import models
+from django.db.models.signals import pre_save, post_save
 from django_extensions.db.models import (
     TimeStampedModel
 )
 
 from utils.model_abstracts import Model
+from utils.slugify import slugify_instance_name
 
 
 class ProductCategory(Model, TimeStampedModel):
@@ -57,6 +59,7 @@ class Discount(Model, TimeStampedModel):
 class Product(Model, TimeStampedModel):
     name = models.CharField(max_length=50, null=False)
     description = models.TextField(null=False)
+    slug = models.SlugField(unique=True, blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     category = models.ForeignKey(to=ProductCategory, on_delete=models.DO_NOTHING, related_name='products')
     inventory = models.OneToOneField(to=ProductInventory, on_delete=models.DO_NOTHING, related_name='product')
@@ -69,3 +72,20 @@ class Product(Model, TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+def product_pre_save(sender, instance, *args, **kwargs):
+    if instance.slug is None:
+        slugify_instance_name(instance, save=False)
+
+
+pre_save.connect(product_pre_save, sender=Product)
+
+
+def product_post_save(sender, instance, created, *args, **kwargs):
+    # print('post_save')
+    if created:
+        slugify_instance_name(instance, save=True)
+
+
+post_save.connect(product_post_save, sender=Product)

@@ -23,7 +23,7 @@ urlpatterns = [
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('logout-all/', LogoutAllView.as_view()),
-    path('cart/', CartAPIView.as_view()),
+    path('cart/', CartAPIView.as_view({'get': 'retrieve'})),
 ]
 
 urlpatterns += router.urls

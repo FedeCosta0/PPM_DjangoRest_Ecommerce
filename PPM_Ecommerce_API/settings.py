@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'ecommerce_users',
     'ecommerce_cart',
     'knox',
-    'ecommerce_orders'
+    'ecommerce_orders',
 ]
 
 MIDDLEWARE = [

@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.urls import path
-from rest_framework import routers
 from knox.views import LogoutView, LogoutAllView
+from rest_framework import routers
 
+from core import views as core_views
+from ecommerce_cart.views import CartProductViewSet, CartAPIView
 from ecommerce_products.views import ProductViewSet, ProductInventoryViewSet, ProductCategoryViewSet, DiscountViewSet
 from ecommerce_users.views import UserViewSet, LoginAPIView, UserAddressViewSet
-from ecommerce_cart.views import ShoppingSessionViewSet, CartProductViewSet, CartAPIView
-from core import views as core_views
 
 router = routers.DefaultRouter()
 router.register(r'products', ProductViewSet, basename='products')
@@ -23,7 +23,7 @@ urlpatterns = [
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('logout-all/', LogoutAllView.as_view()),
-    path('cart/', CartAPIView.as_view({'get': 'retrieve'})),
+    path('cart/', CartAPIView.as_view({'get': 'retrieve', 'post': 'submit_order'})),
 ]
 
 urlpatterns += router.urls

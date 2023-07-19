@@ -123,7 +123,7 @@ class EcommerceUsersTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), self.initial_addresses_user1)
         for address in response.data:
-            self.assertEqual(address['user'], self.address1.user.id)
+            self.assertEqual(address['user_id'], self.address1.user.id)
 
         instance, token = AuthToken.objects.create(user=self.user2)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
@@ -131,7 +131,7 @@ class EcommerceUsersTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), self.initial_addresses_user2)
         for address in response.data:
-            self.assertEqual(address['user'], self.address2.user.id)
+            self.assertEqual(address['user_id'], self.address2.user.id)
 
     def test_get_another_user_address_with_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.admin_user)

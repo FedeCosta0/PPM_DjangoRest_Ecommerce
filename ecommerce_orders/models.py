@@ -11,13 +11,6 @@ class Order(Model, TimeStampedModel):
     total = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
 
-class PaymentDetails(Model, TimeStampedModel):
-    order = models.OneToOneField(to=Order, on_delete=models.CASCADE, related_name='payment_details')
-    amount = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
-    provider = models.CharField(max_length=50, null=False)
-    status = models.PositiveIntegerField(null=False, default=0)
-
-
 class OrderProduct(Model, TimeStampedModel):
     order = models.ForeignKey(to=Order, on_delete=models.CASCADE, related_name='order_products')
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='order_products')

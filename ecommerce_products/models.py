@@ -11,42 +11,31 @@ from utils.slugify import slugify_instance_name
 class ProductCategory(Model, TimeStampedModel):
     name = models.CharField(max_length=50, null=False)
     description = models.TextField(null=False)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Product Category'
+        verbose_name_plural = 'Product Categories'
+        ordering = ["name"]
 
 
 class ProductInventory(Model, TimeStampedModel):
     stock = models.PositiveIntegerField(null=False, default=1)
 
     def add_stock(self, qty):
-        # used to ass Product stock
         new_stock = self.stock + int(qty)
         self.stock = new_stock
         self.save()
 
     def reduce_stock(self, qty):
-        # used to reduce Product stock
         new_stock = self.stock - int(qty)
         self.stock = new_stock
         self.save()
 
     def check_stock(self, qty):
-        # used to check if order quantity exceeds stock levels
         if int(qty) > self.stock:
             return False
         return True
-
-    '''
-    def place_order(self, user, qty):
-        # used to place an order
-        if self.check_stock(qty):
-            order = Order.objects.create(
-                item=self,
-                quantity=qty,
-                user=user)
-            self.manage_stock(qty)
-            return order
-        else:
-        
-    '''
 
 
 class Discount(Model, TimeStampedModel):
@@ -68,7 +57,7 @@ class Product(Model, TimeStampedModel):
     class Meta:
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
-        ordering = ["id"]
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -89,3 +78,20 @@ def product_post_save(sender, instance, created, *args, **kwargs):
 
 
 post_save.connect(product_post_save, sender=Product)
+
+
+def category_pre_save(sender, instance, *args, **kwargs):
+    if instance.slug is None:
+        slugify_instance_name(instance, save=False)
+
+
+pre_save.connect(category_pre_save, sender=ProductCategory)
+
+
+def category_post_save(sender, instance, created, *args, **kwargs):
+    # print('post_save')
+    if created:
+        slugify_instance_name(instance, save=True)
+
+
+post_save.connect(category_post_save, sender=ProductCategory)

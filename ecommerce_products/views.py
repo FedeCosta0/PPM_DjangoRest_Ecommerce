@@ -19,6 +19,7 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductPermission,)
     serializer_class = ProductSerializer
+    lookup_field = 'slug'
 
     serializer_action_classes = {
         'list': ProductSerializer,
@@ -89,7 +90,7 @@ class ProductInventoryViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMix
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
                 quantity = validated_data['stock']
-                product_inventory = self.get_object()
+                product_inventory = ProductInventory.objects.get(id=pk)
                 product_inventory.add_stock(quantity)
                 product_inventory.save()
                 return Response(ProductInventorySerializer(product_inventory).data, status=status.HTTP_200_OK)

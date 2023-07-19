@@ -1,5 +1,5 @@
 """
-ASGI config for PPM_Ecommerce_API project.
+ASGI config for PPM_Ecommerce_API_DEV project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PPM_Ecommerce_API.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PPM_Ecommerce_API_DEV.settings')
 
 application = get_asgi_application()

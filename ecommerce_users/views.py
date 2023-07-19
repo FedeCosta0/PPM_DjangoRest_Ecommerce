@@ -1,3 +1,4 @@
+from decimal import Decimal
 from json import JSONDecodeError
 
 from django.contrib.auth import login
@@ -13,7 +14,8 @@ from rest_framework.response import Response
 from ecommerce_cart.models import ShoppingSession
 from ecommerce_users.models import CustomUser, UserAddress
 from .permissions import UserPermission, UserAddressPermission
-from .serializers import UserSerializer, UserRegistrationSerializer, UserLoginSerializer, UserAddressSerializer
+from .serializers import UserSerializer, UserRegistrationSerializer, UserLoginSerializer, UserAddressSerializer, \
+    UserAddressCreationSerializer
 
 
 class UserViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, viewsets.GenericViewSet):
@@ -63,7 +65,7 @@ class LoginAPIView(knox_views.LoginView):
                 login(request, user)
                 response = super().post(request, format=None)
                 if not ShoppingSession.objects.filter(user=user).exists():
-                    ShoppingSession.objects.create(user=user, total=0.00)
+                    ShoppingSession.objects.create(user=user, total=Decimal.from_float(0.00))
                 return Response(response.data, status=status.HTTP_200_OK)
             else:
                 return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -76,6 +78,19 @@ class UserAddressViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, v
     permission_classes = (UserAddressPermission,)
     serializer_class = UserAddressSerializer
 
+    serializer_action_classes = {
+        'list': UserAddressSerializer,
+        'retrieve': UserAddressSerializer,
+        'update': UserAddressCreationSerializer,
+        'create': UserAddressCreationSerializer,
+    }
+
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
+
     def get_queryset(self):
         user = self.request.user
         if user.is_admin:
@@ -87,7 +102,7 @@ class UserAddressViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, v
         try:
             data = JSONParser().parse(request)
             data['user'] = request.user.id
-            serializer = self.serializer_class(data=data)
+            serializer = self.get_serializer_class()(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data

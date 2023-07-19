@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
+from ecommerce_cart.models import ShoppingSession
 from ecommerce_products.models import Product, ProductCategory, ProductInventory, Discount
 from ecommerce_users.models import CustomUser
 
@@ -68,3 +69,61 @@ class EcommerceCartTestCase(APITestCase):
         self.assertEqual(float(response.data['total']), float(self.product1.price) * float(quantity))
         self.assertEqual(len(response.data['cart_products']), 1)
         self.assertEqual(response.data['cart_products'][0]['quantity'], quantity)
+
+    def test_add_product_to_cart_with_unauthenticated_user(self):
+        quantity = 3
+        data = {
+            "product": self.product1.id,
+            "quantity": quantity
+        }
+
+        response = self.client.post('/cart-product/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_submit_empty_order(self):
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        ShoppingSession.objects.create(user=self.user1)
+        response = self.client.post('/cart/', format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_submit_order_with_unauthenticated_user(self):
+        response = self.client.post('/cart/', format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_submit_order_with_authenticated_user(self):
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        quantity = 3
+        data = {
+            "product": self.product1.id,
+            "quantity": quantity
+        }
+        self.client.post('/cart-product/', data=data, format='vnd.api+json')
+
+        response = self.client.post('/cart/', format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.get('/cart/')
+        self.assertEqual(float(response.data['total']), 0.00)
+        self.assertEqual(len(response.data['cart_products']), 0)
+
+    def test_delete_product_from_cart_with_authenticated_user(self):
+        quantity = 3
+        data = {
+            "product": self.product1.id,
+            "quantity": quantity
+        }
+
+        instance, token = AuthToken.objects.create(user=self.user1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+        response = self.client.post('/cart-product/', data=data, format='vnd.api+json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        cart_product_id = response.data['id']
+        response = self.client.delete(f'/cart-product/{cart_product_id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        response = self.client.get('/cart/')
+        self.assertEqual(float(response.data['total']), 0.00)
+        self.assertEqual(len(response.data['cart_products']), 0)

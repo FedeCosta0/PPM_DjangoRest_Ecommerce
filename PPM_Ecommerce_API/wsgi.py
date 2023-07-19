@@ -1,5 +1,5 @@
 """
-WSGI config for PPM_Ecommerce_API project.
+WSGI config for PPM_Ecommerce_API_DEV project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PPM_Ecommerce_API.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PPM_Ecommerce_API_DEV.settings')
 
 application = get_wsgi_application()

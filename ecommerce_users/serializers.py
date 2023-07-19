@@ -7,6 +7,21 @@ from ecommerce_users.models import CustomUser, UserAddress
 
 
 class UserAddressSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+
+    class Meta:
+        model = UserAddress
+        fields = [
+            'user_id',
+            'address',
+            'city',
+            'postal_code',
+            'country',
+            'telephone'
+        ]
+
+
+class UserAddressCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAddress
         fields = [

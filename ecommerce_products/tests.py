@@ -64,17 +64,17 @@ class EcommerceProductsTestCase(APITestCase):
     def test_get_single_product_with_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.admin_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        response = self.client.get(f'/products/{self.product1.id}/')
+        response = self.client.get(f'/products/{self.product1.slug}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_single_product_with_non_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.user1)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        response = self.client.get(f'/products/{self.product1.id}/')
+        response = self.client.get(f'/products/{self.product1.slug}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_single_product_with_unauthenticated_user(self):
-        response = self.client.get(f'/products/{self.product1.id}/')
+        response = self.client.get(f'/products/{self.product1.slug}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_product_with_admin_user(self):
@@ -169,17 +169,17 @@ class EcommerceProductsTestCase(APITestCase):
     def test_get_single_category_with_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.admin_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        response = self.client.get(f'/products-category/{self.category1.id}/')
+        response = self.client.get(f'/products-category/{self.category1.slug}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_single_category_with_non_admin_user(self):
         instance, token = AuthToken.objects.create(user=self.user1)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        response = self.client.get(f'/products-category/{self.category1.id}/')
+        response = self.client.get(f'/products-category/{self.category1.slug}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_single_category_with_unauthenticated_user(self):
-        response = self.client.get(f'/products-category/{self.category1.id}/')
+        response = self.client.get(f'/products-category/{self.category1.slug}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_category_with_admin_user(self):

@@ -5,12 +5,12 @@ from . import models
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'price', 'category', 'inventory', 'discount')
+    list_display = ('id', 'name', 'slug', 'description', 'price', 'category', 'inventory', 'discount')
 
 
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description')
+    list_display = ('id', 'name', 'description', 'slug')
 
 
 @admin.register(models.ProductInventory)

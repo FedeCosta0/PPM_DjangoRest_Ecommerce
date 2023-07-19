@@ -47,6 +47,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
             'name',
             'description',
         ]
+        lookup_field = 'slug'
 
 
 class ProductInventorySerializer(serializers.ModelSerializer):

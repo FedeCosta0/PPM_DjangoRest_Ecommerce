@@ -1,24 +1,25 @@
 from rest_framework import serializers
 
-from ecommerce_orders.models import Order, OrderProduct, PaymentDetails
+from ecommerce_orders.models import Order, OrderProduct
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        models = OrderProduct
-        fields = ['product', 'quantity', ]
+    product_name = serializers.ReadOnlyField(source='product.name')
 
-
-class PaymentDetailsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PaymentDetails
-        fields = ['amount', 'provider', 'status', ]
+        model = OrderProduct
+        fields = ['product_name', 'quantity', ]
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = OrderProductSerializer(many=True, read_only=True)
-    payment_details = PaymentDetailsSerializer(many=False, read_only=True)
+    order_products = OrderProductSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
-        fields = ['user', 'total', 'products', 'payment_details', ]
+        fields = ['total', 'order_products', ]
+
+
+class OrderCreationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['user', 'total', ]

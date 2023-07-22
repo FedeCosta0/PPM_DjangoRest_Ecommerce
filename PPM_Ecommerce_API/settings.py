@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'rest_framework',
-    'core',
     'ecommerce_products',
     'ecommerce_users',
     'ecommerce_cart',

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import ShoppingSession, CartProduct
+from .models import Cart, CartProduct
 
 
 class CartProductSerializer(serializers.ModelSerializer):
@@ -28,12 +28,12 @@ class CartProductCreationSerializer(serializers.ModelSerializer):
         ]
 
 
-class ShoppingSessionSerializer(serializers.ModelSerializer):
+class CartSerializer(serializers.ModelSerializer):
     cart_products = CartProductSerializer(many=True, read_only=True)
     user = serializers.ReadOnlyField(source='user.email')
 
     class Meta:
-        model = ShoppingSession
+        model = Cart
         fields = [
             'user',
             'total',

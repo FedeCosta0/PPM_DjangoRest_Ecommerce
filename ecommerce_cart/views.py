@@ -9,34 +9,34 @@ from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from ecommerce_cart.models import ShoppingSession, CartProduct
+from ecommerce_cart.models import Cart, CartProduct
 from ecommerce_cart.permissions import CartProductPermission
-from ecommerce_cart.serializers import ShoppingSessionSerializer, CartProductSerializer, CartProductCreationSerializer
+from ecommerce_cart.serializers import CartSerializer, CartProductSerializer, CartProductCreationSerializer
 from ecommerce_orders.models import OrderProduct, Order
 from ecommerce_orders.serializers import OrderSerializer
 
 
 class CartAPIView(viewsets.GenericViewSet):
-    serializer_class = ShoppingSessionSerializer
+    serializer_class = CartSerializer
     permission_classes = (CartProductPermission,)
 
     def get_queryset(self):
         user = self.request.user
-        return ShoppingSession.objects.filter(user=user)
+        return Cart.objects.filter(user=user)
 
     def retrieve(self, request):
-        cart, created = ShoppingSession.objects.get_or_create(user=request.user)
-        serializer = ShoppingSessionSerializer(instance=cart)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        serializer = CartSerializer(instance=cart)
         return Response(data=serializer.data)
 
     @action(detail=True, methods=['post'])
     def submit_order(self, request):
-        shopping_session = ShoppingSession.objects.get(user=request.user)
-        cart_products = CartProduct.objects.filter(shopping_session=shopping_session)
+        cart = Cart.objects.get(user=request.user)
+        cart_products = CartProduct.objects.filter(cart=cart)
         if not cart_products.exists():
             return JsonResponse({"result": "error", "message": f"Empty cart"},
                                 status=400)
-        order = Order.objects.create(user=request.user, total=shopping_session.total)
+        order = Order.objects.create(user=request.user, total=cart.total)
 
         for cart_product in cart_products:
             if not cart_product.is_available():
@@ -45,8 +45,8 @@ class CartAPIView(viewsets.GenericViewSet):
         for cart_product in cart_products:
             cart_product.reduce_stock_from_inventory()
             OrderProduct.objects.create(order=order, product=cart_product.product, quantity=cart_product.quantity)
-        shopping_session.delete()
-        ShoppingSession.objects.create(user=request.user)
+        cart.delete()
+        Cart.objects.create(user=request.user)
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
@@ -57,8 +57,8 @@ class CartProductViewSet(DestroyModelMixin, UpdateModelMixin,
     authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
-        current_shopping_session, created = ShoppingSession.objects.get_or_create(user=self.request.user)
-        return CartProduct.objects.filter(shopping_session=current_shopping_session)
+        current_cart, created = Cart.objects.get_or_create(user=self.request.user)
+        return CartProduct.objects.filter(cart=current_cart)
 
     def create(self, request):
         try:
@@ -67,10 +67,10 @@ class CartProductViewSet(DestroyModelMixin, UpdateModelMixin,
             if serializer.is_valid(raise_exception=True):
                 product = serializer.validated_data['product']
                 quantity = serializer.validated_data['quantity']
-                shopping_session, created = ShoppingSession.objects.get_or_create(user=request.user)
-                shopping_session.total += product.price * Decimal.from_float(float(quantity))
-                shopping_session.save()
-                cart_product = CartProduct.objects.create(shopping_session=shopping_session, product=product,
+                cart, created = Cart.objects.get_or_create(user=request.user)
+                cart.total += product.price * Decimal.from_float(float(quantity))
+                cart.save()
+                cart_product = CartProduct.objects.create(cart=cart, product=product,
                                                           quantity=quantity)
                 return Response(CartProductSerializer(cart_product).data, status=status.HTTP_201_CREATED)
             else:
@@ -80,8 +80,8 @@ class CartProductViewSet(DestroyModelMixin, UpdateModelMixin,
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        shopping_session = ShoppingSession.objects.get(user=request.user)
-        shopping_session.total -= instance.product.price * Decimal.from_float(float(instance.quantity))
-        shopping_session.save()
+        cart = Cart.objects.get(user=request.user)
+        cart.total -= instance.product.price * Decimal.from_float(float(instance.quantity))
+        cart.save()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

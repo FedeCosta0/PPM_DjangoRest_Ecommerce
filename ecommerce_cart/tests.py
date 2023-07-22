@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
-from ecommerce_cart.models import ShoppingSession
+from ecommerce_cart.models import Cart
 from ecommerce_products.models import Product, ProductCategory, ProductInventory, Discount
 from ecommerce_users.models import CustomUser
 
@@ -83,7 +83,7 @@ class EcommerceCartTestCase(APITestCase):
     def test_submit_empty_order(self):
         instance, token = AuthToken.objects.create(user=self.user1)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        ShoppingSession.objects.create(user=self.user1)
+        Cart.objects.create(user=self.user1)
         response = self.client.post('/cart/', format='vnd.api+json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

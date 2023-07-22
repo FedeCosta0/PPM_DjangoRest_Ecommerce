@@ -11,7 +11,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from ecommerce_cart.models import ShoppingSession
+from ecommerce_cart.models import Cart
 from ecommerce_users.models import CustomUser, UserAddress
 from .permissions import UserPermission, UserAddressPermission
 from .serializers import UserSerializer, UserRegistrationSerializer, UserLoginSerializer, UserAddressSerializer, \
@@ -64,8 +64,8 @@ class LoginAPIView(knox_views.LoginView):
                 user = serializer.validated_data['user']
                 login(request, user)
                 response = super().post(request, format=None)
-                if not ShoppingSession.objects.filter(user=user).exists():
-                    ShoppingSession.objects.create(user=user, total=Decimal.from_float(0.00))
+                if not Cart.objects.filter(user=user).exists():
+                    Cart.objects.create(user=user, total=Decimal.from_float(0.00))
                 return Response(response.data, status=status.HTTP_200_OK)
             else:
                 return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

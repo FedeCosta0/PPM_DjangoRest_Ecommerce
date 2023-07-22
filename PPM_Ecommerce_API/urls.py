@@ -3,7 +3,6 @@ from django.urls import path
 from knox.views import LogoutView, LogoutAllView
 from rest_framework import routers
 
-from core import views as core_views
 from ecommerce_cart.views import CartProductViewSet, CartAPIView
 from ecommerce_products.views import ProductViewSet, ProductInventoryViewSet, ProductCategoryViewSet, DiscountViewSet
 from ecommerce_users.views import UserViewSet, LoginAPIView, UserAddressViewSet
@@ -19,7 +18,6 @@ router.register(r'addresses', UserAddressViewSet, basename='addresses')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('contact/', core_views.ContactAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('logout-all/', LogoutAllView.as_view()),

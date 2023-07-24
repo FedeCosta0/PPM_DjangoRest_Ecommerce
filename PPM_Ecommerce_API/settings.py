@@ -19,7 +19,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://fedecosta0.github.io/'
 ]
 CORS_ORIGIN_WHITELIST = [
-    'https://fedecosta0.github.io/',
+    'https://fedecosta0.github.io',
 
 ]
 # Application definition

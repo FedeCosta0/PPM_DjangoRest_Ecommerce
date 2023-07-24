@@ -14,7 +14,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = int(os.environ.get("DEBUG", default=0))
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-db80.up.railway.app/'
+    'https://web-production-db80.up.railway.app/',
+    'https://fedecosta0.github.io/PPM_Ecommerce_Frontend/'
 ]
 
 # Application definition
@@ -146,7 +147,9 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
 }
 
-CSRF_TRUSTED_ORIGINS = ['https://*.web-production-db80.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://*.web-production-db80.up.railway.app',
+                        'https://*.fedecosta0.github.io/PPM_Ecommerce_Frontend']
+
 
 AUTH_USER_MODEL = "ecommerce_users.CustomUser"
 

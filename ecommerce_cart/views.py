@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from knox.auth import TokenAuthentication
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
+from rest_framework.mixins import DestroyModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
@@ -14,6 +14,7 @@ from ecommerce_cart.permissions import CartProductPermission
 from ecommerce_cart.serializers import CartSerializer, CartProductSerializer, CartProductCreationSerializer
 from ecommerce_orders.models import OrderProduct, Order
 from ecommerce_orders.serializers import OrderSerializer
+from ecommerce_products.models import Product
 
 
 class CartAPIView(viewsets.GenericViewSet):
@@ -50,7 +51,7 @@ class CartAPIView(viewsets.GenericViewSet):
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
-class CartProductViewSet(DestroyModelMixin, UpdateModelMixin,
+class CartProductViewSet(DestroyModelMixin,
                          viewsets.GenericViewSet):
     permission_classes = (CartProductPermission,)
     serializer_class = CartProductSerializer
@@ -73,6 +74,27 @@ class CartProductViewSet(DestroyModelMixin, UpdateModelMixin,
                 cart_product = CartProduct.objects.create(cart=cart, product=product,
                                                           quantity=quantity)
                 return Response(CartProductSerializer(cart_product).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
+
+    def update(self, request, pk):
+        try:
+            print(pk)
+            product = Product.objects.get(id=pk)
+            data = JSONParser().parse(request)
+            data['product'] = product.id
+            serializer = CartProductCreationSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                quantity = serializer.validated_data['quantity']
+                cart, created = Cart.objects.get_or_create(user=request.user)
+                cart.total += product.price * Decimal.from_float(float(quantity))
+                cart_product = CartProduct.objects.filter(cart=cart).get(product=product)
+                cart_product.quantity += quantity
+                cart_product.save()
+                cart.save()
+                return Response(CartProductSerializer(cart_product).data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:

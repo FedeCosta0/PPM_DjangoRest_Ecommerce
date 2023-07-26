@@ -12,11 +12,6 @@ class Cart(Model, TimeStampedModel):
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='cart')
     total = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal.from_float(0.00))
 
-    class Meta:
-        verbose_name = 'Carte'
-        verbose_name_plural = 'Carts'
-
-
 
 class CartProduct(Model, TimeStampedModel):
     cart = models.ForeignKey(to=Cart, on_delete=models.CASCADE, related_name='cart_products')
@@ -28,8 +23,3 @@ class CartProduct(Model, TimeStampedModel):
 
     def reduce_stock_from_inventory(self):
         self.product.inventory.reduce_stock(self.quantity)
-
-    class Meta:
-        verbose_name = 'Cart Product'
-        verbose_name_plural = 'Cart Products'
-

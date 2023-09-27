@@ -16,10 +16,12 @@ CSRF_TRUSTED_ORIGINS = [
     'https://web-production-db80.up.railway.app/',
     'https://*.web-production-db80.up.railway.app'
     'https://fedecosta0.github.io/PPM_Ecommerce_Frontend/',
-    'https://fedecosta0.github.io/'
+    'https://fedecosta0.github.io/',
+    'http://localhost:4200/'
 ]
 CORS_ORIGIN_WHITELIST = [
     'https://fedecosta0.github.io',
+    'http://localhost:4200/'
 ]
 # Application definition
 

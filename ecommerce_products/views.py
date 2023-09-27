@@ -3,10 +3,11 @@ from json import JSONDecodeError
 from django.http import JsonResponse
 from knox.auth import TokenAuthentication
 from rest_framework import viewsets, status
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin, \
-    CreateModelMixin
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
+
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Product, ProductCategory, ProductInventory, Discount
 from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission
@@ -76,21 +77,21 @@ class ProductCategoryViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixi
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
 
 
-class ProductInventoryViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMixin, DestroyModelMixin,
-                              viewsets.GenericViewSet):
+class ProductInventoryView(APIView):
     queryset = ProductInventory.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductInventoryPermission,)
     serializer_class = ProductInventorySerializer
 
-    def update(self, request, pk):
+    def put(self, request, slug):
         try:
             data = JSONParser().parse(request)
             serializer = self.serializer_class(data=data)
             if serializer.is_valid(raise_exception=True):
                 validated_data = serializer.validated_data
                 quantity = validated_data['stock']
-                product_inventory = ProductInventory.objects.get(id=pk)
+                product = Product.objects.get(slug=slug)
+                product_inventory = ProductInventory.objects.get(product=product)
                 product_inventory.add_stock(quantity)
                 product_inventory.save()
                 return Response(ProductInventorySerializer(product_inventory).data, status=status.HTTP_200_OK)

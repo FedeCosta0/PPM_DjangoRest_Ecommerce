@@ -5,13 +5,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
+load_dotenv()
 SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = int(os.environ.get("DEBUG", default=0))
+
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-db80.up.railway.app/',
@@ -21,7 +20,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 CORS_ORIGIN_WHITELIST = [
     'https://fedecosta0.github.io',
-
 ]
 # Application definition
 

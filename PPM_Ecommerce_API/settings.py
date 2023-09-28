@@ -21,7 +21,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 CORS_ORIGIN_WHITELIST = [
     'https://fedecosta0.github.io',
-    'http://localhost:4200/'
+    'http://localhost:4200'
 ]
 # Application definition
 

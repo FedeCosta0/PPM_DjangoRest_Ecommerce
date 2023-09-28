@@ -26,12 +26,7 @@ CORS_ORIGIN_WHITELIST = [
     'https://fedecosta0.github.io/PPM_frontend_ecommerce/'
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'https://fedecosta0.github.io',
-    'https://fedecosta0.github.io/PPM_frontend_ecommerce',
-    'https://fedecosta0.github.io/',
-    'https://fedecosta0.github.io/PPM_frontend_ecommerce/'
-]
+
 # Application definition
 
 INSTALLED_APPS = [

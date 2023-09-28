@@ -17,7 +17,7 @@ from ecommerce_orders.serializers import OrderSerializer
 from ecommerce_products.models import Product
 
 
-class CartAPIView(viewsets.GenericViewSet):
+class CartAPIViewSet(viewsets.GenericViewSet):
     serializer_class = CartSerializer
     permission_classes = (CartProductPermission,)
 

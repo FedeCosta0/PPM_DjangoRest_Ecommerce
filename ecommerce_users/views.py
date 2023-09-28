@@ -66,7 +66,7 @@ class LoginAPIView(knox_views.LoginView):
                 response = super().post(request, format=None)
                 if not Cart.objects.filter(user=user).exists():
                     Cart.objects.create(user=user, total=Decimal.from_float(0.00))
-                    print(response.data)
+                response.data["user"]["is_admin"] = CustomUser.objects.get(id=response.data['user']['id']).is_admin
                 return Response(response.data, status=status.HTTP_200_OK)
             else:
                 return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

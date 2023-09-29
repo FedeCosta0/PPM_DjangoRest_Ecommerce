@@ -3,7 +3,7 @@ from django.urls import path
 from knox.views import LogoutView, LogoutAllView
 from rest_framework import routers
 
-from ecommerce_cart.views import CartProductViewSet, CartAPIView
+from ecommerce_cart.views import CartProductViewSet, CartAPIViewSet
 from ecommerce_products.views import ProductViewSet, ProductInventoryView, ProductCategoryViewSet, DiscountViewSet, ProductCountView
 from ecommerce_users.views import UserViewSet, LoginAPIView, UserAddressViewSet
 
@@ -20,7 +20,7 @@ urlpatterns = [
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('logout-all/', LogoutAllView.as_view()),
-    path('cart/', CartAPIView.as_view({'get': 'retrieve', 'post': 'submit_order'})),
+    path('cart/', CartAPIViewSet.as_view({'get': 'retrieve', 'post': 'submit_order'})),
     path('product-inventory/<str:slug>/', ProductInventoryView.as_view()),
     path('products-count/', ProductCountView.as_view())
 ]

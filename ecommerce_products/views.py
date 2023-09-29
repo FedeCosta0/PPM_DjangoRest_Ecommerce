@@ -3,30 +3,47 @@ from json import JSONDecodeError
 from django.http import JsonResponse
 from knox.auth import TokenAuthentication
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin
-
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Product, ProductCategory, ProductInventory, Discount
-from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission
+from .permissions import ProductPermission, ProductCategoryPermission, ProductInventoryPermission, DiscountPermission, \
+    ProductCountPermission
 from .serializers import ProductSerializer, ProductCreationSerializer, ProductCategorySerializer, \
     ProductInventorySerializer, DiscountSerializer
 
 
 class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin, viewsets.GenericViewSet):
-    queryset = Product.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ProductPermission,)
     serializer_class = ProductSerializer
     lookup_field = 'slug'
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['name', 'price']
+    pagination_class = PageNumberPagination
 
     serializer_action_classes = {
         'list': ProductSerializer,
         'retrieve': ProductSerializer,
         'create': ProductCreationSerializer,
     }
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        category = self.request.query_params.get('category')
+
+        if category is not None:
+            _category = ProductCategory.objects.get(name=category)
+            queryset = queryset.filter(category=_category)
+            queryset = queryset.order_by()
+
+        return queryset
 
     def get_serializer_class(self):
         try:
@@ -52,6 +69,17 @@ class ProductViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, Destr
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
+
+
+class ProductCountView(APIView, ListModelMixin):
+    queryset = Product.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (ProductCountPermission,)
+
+    @action(detail=False, methods=['get'])
+    def get(self, request, *args, **kwargs):
+        queryset = Product.objects.all()
+        return Response({'count': len(queryset)})
 
 
 class ProductCategoryViewSet(RetrieveModelMixin, UpdateModelMixin, ListModelMixin, DestroyModelMixin,
@@ -141,5 +169,5 @@ class OrderViewSet(
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
-            
+
 """

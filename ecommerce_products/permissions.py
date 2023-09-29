@@ -9,6 +9,11 @@ class ProductPermission(permissions.BasePermission):
             return bool(request.user.is_authenticated and request.user.is_admin)
 
 
+class ProductCountPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return True
+
+
 class ProductCategoryPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if view.action in ['list', 'retrieve']:

@@ -21,9 +21,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 CORS_ORIGIN_WHITELIST = [
     'https://fedecosta0.github.io',
-    'https://fedecosta0.github.io/PPM_frontend_ecommerce',
-    'https://fedecosta0.github.io/',
-    'https://fedecosta0.github.io/PPM_frontend_ecommerce/'
 ]
 
 
